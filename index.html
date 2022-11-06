@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <title>Google Maps Multiple Markers</title>
+    <script src="http://maps.google.com/maps/api/js?key=AIzaSyB9NAmcNVf-nq5MqaKbUm1tjQEOlrYjDBQ"
+        type="text/javascript"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.1/css/all.css">
+    <!-- Fontawsome CSS -->
+    <link media="all" type="text/css" rel="stylesheet"
+        href="https://weedorganic.ca/themes/greenemerald/bower_components/font-awesome-5/advanced-options/use-with-node-js/fontawesome-free/css/all.css">
+    <!-- Bootstrap CSS -->
+    <link media="all" type="text/css" rel="stylesheet"
+        href="https://weedorganic.ca/themes/greenemerald/bower_components/bootstrap/dist/css/bootstrap.min.css">
+
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+    <div id="map" style="width: 100%; height: 600px;"></div>
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+    <script
+        src="https://weedorganic.ca/themes/greenemerald/bower_components/bootstrap/site/docs/4.1/assets/js/vendor/popper.min.js"></script>
+    <script
+        src="https://weedorganic.ca/themes/greenemerald/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="./data.json"></script>
+    <script type="text/javascript">
+        //consuming the data.
+        fetch("data.json")
+            .then(response => response.json())
+            .then(json => {
+                console.log('JSON   ', json);
+                var locations = [];
+
+                for (let i = 0; i < json[0].list.length; i++) {
+                    var tinylogoIcon = {
+                        url: json[0].list[i].logoUrl,
+                        // This marker is 20 pixels wide by 32 pixels high.
+                        scaledSize: new google.maps.Size(40, 40),
+                        // The origin for this image is (0, 0).
+                        origin: new google.maps.Point(0, 0),
+                        // shape: { coords: [17, 17, 18], type: 'circle' },
+                        // The anchor for this image is the base of the flagpole at (0, 32).
+                        anchor: new google.maps.Point(0, 0),
+
+                        optimized: false
+                    };
+                    let website = json[0].list[i].website;
+                    let popupImage = json[0].list[i].logoUrl;
+                    let title = json[0].list[i].title;
+                    let phone = json[0].list[i].addresses[0].phone;
+                    let email = json[0].list[i].addresses[0].email;
+                    let storeUrl = json[0].list[i].store_url;
+                    let rating = json[0].list[i].avg_rating;
+                    let openUntil = json[0].list[i].open_or_close;
+                    // var tinylogoIcon = {
+                    //     path: "M10.453 14.016l6.563-6.609-1.406-1.406-5.156 5.203-2.063-2.109-1.406 1.406zM12 2.016q2.906 0 4.945 2.039t2.039 4.945q0 1.453-0.727 3.328t-1.758 3.516-2.039 3.070-1.711 2.273l-0.75 0.797q-0.281-0.328-0.75-0.867t-1.688-2.156-2.133-3.141-1.664-3.445-0.75-3.375q0-2.906 2.039-4.945t4.945-2.039z",
+                    //     fillColor: "blue",
+                    //     fillOpacity: 0.6,
+                    //     strokeWeight: 0,
+                    //     rotation: 0,
+                    //     scale: 2,
+                    //     anchor: new google.maps.Point(15, 30),
+                    // };
+                    locations.push(
+                        [
+                            json[0].list[i].title, //0
+                            json[0].list[i].addresses[0].latitude, //1 
+                            json[0].list[i].addresses[0].longitude, //2
+                            tinylogoIcon, //3
+                            website, //4
+                            popupImage, //5
+                            phone, //6
+                            email, //7
+                            storeUrl, //8
+                            rating, //9
+                            openUntil, //10
+                            i + 1
+                        ]
+                    );
+                }
+                console.log("locations asdsad", locations);
+
+                var map = new google.maps.Map(document.getElementById('map'), {
+                    zoom: 10,
+                    center: new google.maps.LatLng(43.653225, -79.3832),
+                    mapTypeId: google.maps.MapTypeId.ROADMAP
+                });
+
+                //.leaflet-marker-icon .map-pin-marker {
+                //  width: 50px;
+                //  height: 50px;
+                //  border-radius: 50%;
+                //  border: 3px solid #75bb4d;
+                //  background-color: #75bb4d;
+                //  overflow: hidden;
+                //}
+
+                var infowindow = new google.maps.InfoWindow();
+
+                var marker, i;
+
+                for (i = 0; i < locations.length; i++) {
+                    if (i == 0) {
+                        marker = new google.maps.Marker({
+                            position: new google.maps.LatLng(locations[i][1], locations[i][2]),
+                            map: map,
+                            zIndex: 20,
+                            icon: locations[i][3]
+                        });
+                    } else {
+                        marker = new google.maps.Marker({
+                            position: new google.maps.LatLng(locations[i][1], locations[i][2]),
+                            map: map,
+                            zIndex: 200,
+                            icon: locations[i][3]
+                        });
+                    }
+                    let contentString =
+                        `<div class="card text-center">
+                            <div class="fit-size">
+                                <a href="#" class="aspect-ratio d-block">
+                                    <img class="card-img-top cover aspect-content transition" src="`+ locations[i][5] + `" alt="Img" style="height: 120px; width: 120px" />
+                                </a>
+                                <a href="#" class="product-like"> </a>
+                            </div>
+                            <div class="card-body">
+                                <div class="">
+                                    <div class="">
+                                        <h5 class="card-title text-truncate mb-1 text-center">`+ locations[i][0] + `</h5>
+                                    </div>
+                                </div>
+                                <div class="detail-property">
+                                    <span class="d-block">
+                                        <a href="`+ locations[i][4] + `" target="_blank" style="width: 50%;float: left;"><i class="fa fa-globe" style="font-size: 20px" aria-hidden="true"></i></a>
+                                        <a href="tel:`+ locations[i][6] + `" target="_blank"><i class="fa fa-phone" style="font-size: 20px" aria-hidden="true"></i></a>
+                                    </span>
+                                    <div class="d-block"><span class="d-inline-block">`+locations[i][10]+`</span></div>
+                                </div>`;
+
+                    contentString += ` 
+                        <div class="align-self-center disp-rating d-inline-block">
+
+
+                            <span class="star-rate-light-small"><i class="fas fa-star"></i> </span>
+
+
+                            <span class="star-rate-light-small"><i class="fas fa-star"></i> </span>
+
+
+                            <span class="star-rate-light-small"><i class="fas fa-star"></i> </span>
+
+
+                            <span class="star-rate-light-small"><i class="fas fa-star"></i> </span>
+
+
+                            <span class="star-rate-light-small"><i class="fas fa-star"></i> </span>
+
+
+                        </div> `;
+
+                    contentString += `<div class="">
+                                    <div class="view-menu-btn"><a href="`+ locations[i][8] + `/menu" class="btn btn-primary d-block rounded-0 text-uppercase text-white p-0">View Menu</a></div>
+                                </div>
+                            </div>
+                        </div>`;
+                    google.maps.event.addListener(marker, 'click', (function (marker, i) {
+                        return function () {
+                            infowindow.setContent(contentString);
+                            // infowindow.setContent(locations[i][0]);
+                            infowindow.open(map, marker);
+                        }
+                    })(marker, i));
+
+                    google.maps.event.addListener(marker, 'mouseover', function () {
+                        $('img[src="' + this.icon + '"]').stop().animate({ opacity: 1 });
+                    });
+
+                    google.maps.event.addListener(marker, 'mouseout', function () {
+                        $('img[src="' + this.icon + '"]').stop().animate({ opacity: .5 });
+                    });
+                }
+            });
+
+    </script>
+
+</body>
+
+</html>
