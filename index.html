@@ -54,6 +54,7 @@
                     let storeUrl = json[0].list[i].store_url;
                     let rating = json[0].list[i].avg_rating;
                     let openUntil = json[0].list[i].open_or_close;
+                    let accountType = json[0].list[i].subscription_title;
                     // var tinylogoIcon = {
                     //     path: "M10.453 14.016l6.563-6.609-1.406-1.406-5.156 5.203-2.063-2.109-1.406 1.406zM12 2.016q2.906 0 4.945 2.039t2.039 4.945q0 1.453-0.727 3.328t-1.758 3.516-2.039 3.070-1.711 2.273l-0.75 0.797q-0.281-0.328-0.75-0.867t-1.688-2.156-2.133-3.141-1.664-3.445-0.75-3.375q0-2.906 2.039-4.945t4.945-2.039z",
                     //     fillColor: "blue",
@@ -76,6 +77,7 @@
                             storeUrl, //8
                             rating, //9
                             openUntil, //10
+                            accountType, //11
                             i + 1
                         ]
                     );
@@ -102,18 +104,27 @@
                 var marker, i;
 
                 for (i = 0; i < locations.length; i++) {
-                    if (i == 0) {
+                    if (locations[i][11] == "PRO") {
+                        marker = new google.maps.Marker({
+                            position: new google.maps.LatLng(locations[i][1], locations[i][2]),
+                            map: map,
+                            zIndex: 2000,
+                            icon: locations[i][3]
+                        });
+                    }
+                    else if (locations[i][11] == "PREMIUM") {
+                        marker = new google.maps.Marker({
+                            position: new google.maps.LatLng(locations[i][1], locations[i][2]),
+                            map: map,
+                            zIndex: 1000,
+                            icon: locations[i][3]
+                        });
+                    }
+                    else {
                         marker = new google.maps.Marker({
                             position: new google.maps.LatLng(locations[i][1], locations[i][2]),
                             map: map,
                             zIndex: 20,
-                            icon: locations[i][3]
-                        });
-                    } else {
-                        marker = new google.maps.Marker({
-                            position: new google.maps.LatLng(locations[i][1], locations[i][2]),
-                            map: map,
-                            zIndex: 200,
                             icon: locations[i][3]
                         });
                     }
@@ -136,7 +147,7 @@
                                         <a href="`+ locations[i][4] + `" target="_blank" style="width: 50%;float: left;"><i class="fa fa-globe" style="font-size: 20px" aria-hidden="true"></i></a>
                                         <a href="tel:`+ locations[i][6] + `" target="_blank"><i class="fa fa-phone" style="font-size: 20px" aria-hidden="true"></i></a>
                                     </span>
-                                    <div class="d-block"><span class="d-inline-block">`+locations[i][10]+`</span></div>
+                                    <div class="d-block"><span class="d-inline-block">`+ locations[i][10] + `</span></div>
                                 </div>`;
 
                     contentString += ` 
